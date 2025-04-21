@@ -1,0 +1,293 @@
+openapi: 3.0.3
+info:
+  title: Laravel API
+  version: 1.0.0
+servers:
+  - url: http://localhost/api
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []
+
+paths:
+  /logout:
+    get:
+      summary: Cerrar sesión
+      tags: [Auth]
+      responses:
+        '200':
+          description: Logout exitoso
+
+  /tasks:
+    get:
+      summary: Listar tareas, caché 30s
+      tags: [Tasks]
+      responses:
+        '200':
+          description: Lista de tareas
+    parameters:
+        - name: title
+          in: query
+          schema:
+            type: string
+        - name: description
+          in: query
+          schema:
+            type: string
+        - name: date_end
+          in: query
+          schema:
+            type: string
+            format: date
+    post:
+      summary: Crear tarea
+      tags: [Tasks]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["document", "title", "description", "date_end", "time_alert", "hour_end"]
+              properties:
+                document:
+                  type: string
+                title:
+                  type: string
+                description:
+                  type: string
+                date_end:
+                  type: string
+                  format: date
+                time_alert:
+                  type: string
+                hour_end:
+                  type: string
+      responses:
+        '201':
+          description: Tarea creada
+
+  /tasks/{id}:
+    get:
+      summary: Obtener tarea por ID
+      tags: [Tasks]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Detalles de la tarea
+
+    delete:
+      summary: Eliminar tarea
+      tags: [Tasks]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Tarea eliminada
+
+  /tasks/{task}:
+    put:
+      description: Solo enviar los campos que quiere actualizar
+      summary: Actualizar tarea
+      tags: [Tasks]
+      parameters:
+        - name: task
+          
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["document", "title", "description", "date_end", "time_alert", "hour_end"]
+              properties:
+                document:
+                  type: string
+                title:
+                  type: string
+                description:
+                  type: string
+                status:
+                  type: string
+                date_end:
+                  type: string 
+                  format: date
+                time_alert:
+                  type: string
+                hour_end:
+                  type: string
+      responses:
+        '200':
+          description: Tarea actualizada
+
+  /reminders:
+    post:
+      summary: Crear recordatorio
+      description: El campo type_time_reminder solo acepta los valores "dia" o "minutos" y value_time_reminder 5,10,15,20,30
+      tags: [Reminders]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["task_id", "message",  "value_time_reminder"]
+              properties:
+                task_id:
+                  type: integer
+                message:
+                  type: string
+                value_time_reminder:
+                  type: integer
+      responses:
+        '201':
+          description: Recordatorio creado
+
+  /reminders/task/{id}:
+    get:
+      summary: Obtener recordatorios de una tarea
+      tags: [Reminders]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de recordatorios
+
+  /reminders/{id}:
+    get:
+      summary: Obtener un recordatorio por ID
+      tags: [Reminders]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Detalles del recordatorio
+
+    delete:
+      summary: Eliminar recordatorio
+      tags: [Reminders]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Recordatorio eliminado
+
+  /backup:
+    get:
+      summary: Generar backup
+      tags: [Backup]
+      responses:
+        '200':
+          description: Backup generado
+
+  /backup/list:
+    get:
+      summary: Listar backups
+      tags: [Backup]
+      responses:
+        '200':
+          description: Lista de backups
+
+  /backup/restore:
+    post:
+      summary: Restaurar backup
+      tags: [Backup]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["document"]
+              properties:
+                document:
+                  type: string
+      responses:
+        '200':
+          description: Backup restaurado
+
+  /soap:
+    get:
+      summary: Ejecutar método SOAP
+      tags: [SOAP]
+      responses:
+        '200':
+          description: Resultado del SOAP
+
+  /register:
+    post:
+      summary: Registro de usuario
+      tags: [Auth]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["name", "email", "password"]
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+      responses:
+        '201':
+          description: Usuario registrado
+
+  /login:
+    post:
+      summary: Inicio de sesión
+      tags: [Auth]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["email", "password"]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+      responses:
+        '200':
+          description: Token JWT recibido

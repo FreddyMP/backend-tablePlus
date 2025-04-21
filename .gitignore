@@ -1,0 +1,16 @@
+/vendor
+/node_modules
+/.env
+/.idea
+/.vscode
+/.phpunit.result.cache
+/storage/*.key
+/storage/*.log
+/storage/app/public
+/public/storage
+/public/hot
+/public/js
+/public/css
+/public/mix-manifest.json
+.DS_Store
+Thumbs.db
