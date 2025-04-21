@@ -33,7 +33,7 @@ class ProbandoController extends Controller
                 foreach($reminders as $reminder){
                     if($horaExc == $reminder->value_time_reminder){
                         $user = User::find($task->user_id);
-                        $user->notify(new TaskNotification($reminders));
+                        $user->notify(new TaskNotification($reminders,"Notification"));
                     }
                 }
                 
